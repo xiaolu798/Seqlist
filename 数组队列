@@ -1,0 +1,139 @@
+//
+// Created by lenovo on 2024/9/20.
+//
+
+
+
+/**
+ * 判断队列是否是满 (rear+1) % (capacity + 1) == front
+ * **/
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+typedef int DataType;
+#define Max_size 100
+typedef struct Queue{
+    DataType * data;
+    int front;
+    int rear;
+    int capacity;
+}Queue,*PQueue;
+
+///创建一个数组队列
+PQueue CreateQueue(){
+    Queue * q;
+    q = (PQueue)malloc(sizeof(Queue));
+    if(q == NULL){
+        exit(-1);
+    }
+    q->front = 0;
+    q->rear = 0;
+    q->capacity = Max_size;
+    q->data = (DataType*) malloc(sizeof(DataType)* (q->capacity + 1));///要多创建一个空间
+    if (q->data == NULL) {
+        free(q);  // 如果分配失败，释放队列结构体
+        exit(-1);  // 处理内存分配失败
+    }
+    return q;
+
+}
+
+
+
+
+int EmpetyQueue(Queue * q);
+int QueueIsFull(Queue * q);
+///插入元素
+void InsertQueue(Queue * q,DataType x){
+    if(QueueIsFull(q)){
+        exit(-1);
+    }
+    else{
+        q->data[q->rear] = x;
+        q->rear++;
+    }
+
+}
+void DeteQueue(Queue * q){
+    if(EmpetyQueue(q)){
+        exit(-1);
+
+    }
+    else{
+        printf("Deleted: %d\n", q->data[q->front]);
+        q->front++;
+    }
+}
+
+int EmpetyQueue(Queue * q){
+    assert(q);
+    if(q->front == q->rear){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
+
+void PrintQueue(Queue *q) {
+    if (EmpetyQueue(q)) {
+        printf("Queue is empty!\n");
+        return;
+    }
+
+    printf("Queue elements: ");
+    for (int i = q->front; i < q->rear; i++) {
+        printf("%d ", q->data[i]);
+    }
+    printf("\n");
+}
+
+
+void FreeQueue(Queue *q) {
+    free(q->data);
+    free(q);
+}
+
+int QueueIsFull(Queue * q){
+    if((q->rear + 1) % (q->capacity + 1) == q->front){
+        return 1;
+    }
+    else{
+        return  0;
+    }
+}
+
+int main() {
+    PQueue queue = CreateQueue();
+
+    // 测试插入
+    for (int i = 1; i <= 5; i++) {
+        InsertQueue(queue, i);
+    }
+    PrintQueue(queue);  // 打印队列
+
+    // 测试删除
+    DeteQueue(queue);
+    DeteQueue(queue);
+    PrintQueue(queue);  // 打印队列
+
+    // 继续插入
+    for (int i = 6; i <= 10; i++) {
+        InsertQueue(queue, i);
+    }
+    PrintQueue(queue);  // 打印队列
+
+    // 检查状态
+    printf("Queue empty: %d\n", EmpetyQueue(queue));
+    printf("Queue full: %d\n", QueueIsFull(queue));
+
+    // 删除剩余元素
+    while (!EmpetyQueue(queue)) {
+        DeteQueue(queue);
+    }
+    PrintQueue(queue);  // 打印队列
+
+    // 释放队列
+    FreeQueue(queue);
+    return 0;
+}
